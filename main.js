@@ -31,16 +31,21 @@ function getTables(num){
 }
 
 
-function loadData(data, dict){
+function processData(data){
+	let presidents = {}
 	for (let i in data){
 		let president = data[i]
-		dict[president.Name] = [president.Height, president.Weight]
+		presidents[president.Name] = [president.Height, president.Weight]
 		}
+  createTable(presidents);
+  createLabel(Object.keys(presidents));
+  changeSelection(presidents);
 	}
 
 
 function createTable(dict){
-	table = '<table>\n<tr><td>Name</td><td>Height</td><td>Weight</td></tr>\n'
+	let entries = document.getElementById('presidentTable')
+	let table = '<table>\n<tr><td>Name</td><td>Height</td><td>Weight</td></tr>\n'
 
 	for (let i in dict){
 		n = i;
@@ -52,14 +57,48 @@ function createTable(dict){
 			'</td><td>'+ w + 
 			'</td></tr>\n'
 	}
-	return (table + '</table>')
+	entries.innerHTML = table + '</table>'
 }
 
 
-Plotly.d3.csv('https://raw.githubusercontent.com/schoolkidrich/schoolkidrich.github.io/main/presidents.csv', function(data){
-let presidents = {};
-loadData(data, presidents);
+function loadData(){
+	Plotly.d3.csv('https://raw.githubusercontent.com/schoolkidrich/schoolkidrich.github.io/main/presidents.csv',
+	function(data){ processData(data);
+  })
+ }
+ 
+ 
+function createLabel(data){
+	 Plotly.d3
+    .select('#options')
+    .selectAll('option')
+    .data(data)
+    .enter()
+    .append('option')
+    .text(function(d) {
+      return d;
+    })
+    .attr('value', function(d) {
+      return d;
+    });
+}
 
-let entries = document.getElementById('presidentTable');
-entries.innerHTML = createTable(presidents);
-})
+
+
+function setTraits(data, val){
+	let traits = document.getElementById('traits')
+  let text = 'Height: ' + data[val][0] + '\nWeight: ' + data[val][1] 
+  traits.innerHTML = text
+}
+
+
+
+function changeSelection(data){
+	Plotly.d3.select('#options').on('change', function() {
+			let newVal = Plotly.d3.event.target.value
+    	setTraits(data, newVal)
+  	})
+ }
+
+
+loadData()
