@@ -29,3 +29,37 @@ function getTables(num){
   }
 	return (tables)
 }
+
+
+function loadData(data, dict){
+	for (let i in data){
+		let president = data[i]
+		dict[president.Name] = [president.Height, president.Weight]
+		}
+	}
+
+
+function createTable(dict){
+	table = '<table>\n<tr><td>Name</td><td>Height</td><td>Weight</td></tr>\n'
+
+	for (let i in dict){
+		n = i;
+		h = dict[i][0]
+		w = dict[i][1]
+		table = table + 
+			'<tr><td>'+ n +
+			'</td><td>'+ h +
+			'</td><td>'+ w + 
+			'</td></tr>\n'
+	}
+	return (table + '</table>')
+}
+
+
+Plotly.d3.csv('https://raw.githubusercontent.com/schoolkidrich/schoolkidrich.github.io/main/presidents.csv', function(data){
+let presidents = {};
+loadData(data, presidents);
+
+let entries = document.getElementById('presidentTable');
+entries.innerHTML = createTable(presidents);
+})
